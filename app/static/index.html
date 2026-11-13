@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>WordMate AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #263248;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 70px auto;
+            padding: 24px;
+        }
+
+        h1 {
+            color: #3154a3;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #667085;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .search {
+            display: flex;
+            gap: 12px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #3154a3;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 24px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 20px auto;
+                padding: 16px;
+            }
+
+            .search {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <h1>WordMate AI</h1>
+        <p class="subtitle">
+            Your personal AI English vocabulary tutor
+        </p>
+
+        <section class="card">
+            <div class="search">
+                <input
+                    id="wordInput"
+                    type="text"
+                    placeholder="輸入英文單字，例如 implement"
+                    maxlength="80"
+                >
+
+                <button id="searchButton">
+                    查詢單字
+                </button>
+            </div>
+
+            <div id="result" aria-live="polite">
+                輸入一個英文單字，開始學習！
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const input = document.getElementById("wordInput");
+        const button = document.getElementById("searchButton");
+        const result = document.getElementById("result");
+
+        async function searchWord() {
+            const word = input.value.trim();
+
+            if (!word) {
+                result.textContent = "請先輸入英文單字。";
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "AI 查詢中...";
+            result.textContent = "正在產生英文解釋...";
+
+            try {
+                const response = await fetch("/vocabulary/explain", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ word: word })
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `API Error: ${response.status}`
+                    );
+                }
+
+                const data = await response.json();
+
+                result.textContent = data.explanation;
+
+            } catch (error) {
+                console.error(error);
+                result.textContent =
+                    "查詢失敗，請稍後再試。";
+
+            } finally {
+                button.disabled = false;
+                button.textContent = "查詢單字";
+            }
+        }
+
+        button.addEventListener("click", searchWord);
+
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                searchWord();
+            }
+        });
+    </script>
+</body>
+</html>
