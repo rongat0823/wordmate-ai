@@ -1,226 +1,554 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WordMate AI · English Vocabulary</title>
-  <style>
-    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#263248;background:#f3f6fc}
-    *{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{border:0;border-radius:10px;background:#3154a3;color:#fff;padding:12px 16px;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}
-    button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
-    .shell{max-width:880px;margin:36px auto;padding:0 18px 36px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}.brand-icon{background:#3154a3;color:#fff;border-radius:14px;padding:12px;font-size:22px}.brand h1{margin:0;font-size:27px;color:#3154a3}.subtle,.hint{color:#667085}.brand p{margin:3px 0 0}
-    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 22px}.tab{background:#e4eaf5;color:#263248}.tab.active{background:#3154a3;color:#fff}
-    .panel{background:#fff;border:1px solid #e6eaf2;border-radius:18px;padding:26px;box-shadow:0 8px 26px #2632480d}.panel[hidden],#quizArea[hidden]{display:none}
-    .heading-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.heading-row h2{margin:0}.search{display:flex;gap:10px;margin-top:18px}input{min-width:0;flex:1;padding:13px;border:1px solid #cad2df;border-radius:10px}.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
-    .btn-green{background:#16836b}.btn-soft{background:#667085}.btn-red{background:#c63e4c}.status{font-size:14px;color:#475467;overflow-wrap:anywhere}.dictionary{line-height:1.65;margin-top:20px;overflow-wrap:anywhere}.dictionary h3{font-size:25px;margin:0 0 6px}.dictionary .pos{font-weight:700;color:#3154a3;margin:16px 0 6px}.dictionary ul{padding-left:22px;margin:4px 0 12px}.dictionary li{margin:10px 0}.dictionary .example{display:block;margin-top:5px;color:#667085;font-style:italic}.dictionary .phonetic{margin-bottom:16px;color:#667085}
-    details.word-card{border:1px solid #e2e8f0;border-radius:12px;margin:10px 0;background:#fff}details.word-card summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:15px;font-weight:700;list-style:none}details.word-card summary::-webkit-details-marker{display:none}details.word-card summary::after{content:'▾';color:#667085}details.word-card[open] summary::after{content:'▴'}details.word-card .word-content{border-top:1px solid #edf0f5;padding:0 15px 16px}.word-content .dictionary h3{font-size:20px}
-    .option{display:block;width:100%;text-align:left;margin:10px 0;background:#f3f6fc;color:#263248;border:1px solid #d5dce8}.option:hover:not(:disabled){background:#e7eefc}.option.correct{background:#d8f5e3;border-color:#16836b}.option.incorrect{background:#fee2e2;border-color:#c63e4c}.score{font-weight:700;color:#3154a3}#quizQuestion{line-height:1.6}
-    @media(max-width:600px){.shell{margin:16px auto;padding:0 12px 24px}.panel{padding:18px}.brand h1{font-size:23px}.search{flex-direction:column}.tabs{gap:5px}.tab{padding:12px 5px;font-size:13px}.heading-row h2{font-size:21px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordMate AI</title>
+
+    <style>
+        /* 1. 整體外觀：延續舊版的藍白卡片風格 */
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #263248;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 50px auto;
+            padding: 24px;
+        }
+
+        h1 { color: #3154a3; margin-bottom: 8px; }
+        .subtitle { color: #667085; margin-bottom: 28px; }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        button {
+            background: #3154a3;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button:focus-visible, input:focus-visible, summary:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        /* 2. 三個功能切換按鈕 */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button { flex: 1; background: #e3e9f5; color: #263248; }
+        .tab-button.active { background: #3154a3; color: white; }
+        .page[hidden], #quizArea[hidden] { display: none; }
+
+        /* 3. 查詢區 */
+        .search { display: flex; gap: 12px; }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        #saveButton { background: #16836b; }
+        #saveMessage, .hint { color: #667085; font-size: 14px; }
+
+        /* 4. 字典定義與例句 */
+        .dictionary { margin-top: 24px; line-height: 1.7; overflow-wrap: anywhere; }
+        .dictionary h3 { font-size: 25px; margin: 0 0 8px; }
+        .dictionary h4 { margin: 16px 0 4px; color: #3154a3; }
+        .dictionary ul { padding-left: 24px; }
+        .dictionary li { margin-bottom: 12px; }
+        .dictionary em { display: block; margin-top: 4px; color: #667085; }
+        .phonetic { color: #667085; }
+
+        /* 5. 收藏區：預設只顯示單字，點擊後展開 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .section-header h2 { margin: 0; }
+        #refreshButton { background: #667085; }
+
+        .saved-item {
+            margin-top: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .saved-item summary {
+            padding: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .saved-content { padding: 0 16px 16px; border-top: 1px solid #e5e7eb; }
+        .saved-content .dictionary h3 { font-size: 20px; }
+        .delete-button { background: #c63e4c; margin-top: 12px; }
+
+        /* 6. 測驗區 */
+        #quizQuestion { margin: 22px 0 16px; line-height: 1.5; }
+        #quizScore { color: #3154a3; font-weight: bold; }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            background: #f4f6fb;
+            color: #263248;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+        }
+
+        .quiz-option.correct { background: #dcfce7; border-color: #16a34a; }
+        .quiz-option.incorrect { background: #fee2e2; border-color: #dc2626; }
+        #quizFeedback { min-height: 24px; }
+
+        /* 7. 手機版：窄螢幕時讓搜尋欄直向排列 */
+        @media (max-width: 480px) {
+            .container { margin: 20px auto; padding: 16px; }
+            .card { padding: 20px; }
+            .search { flex-direction: column; }
+            .tab-button { padding: 12px 5px; font-size: 13px; }
+        }
+    </style>
 </head>
 <body>
-<main class="shell">
-  <header class="brand"><div class="brand-icon" aria-hidden="true">W</div><div><h1>WordMate AI</h1><p class="subtle">Build your English vocabulary, one word at a time.</p></div></header>
-  <nav class="tabs" aria-label="功能切換">
-    <button class="tab active" data-tab="dictionary" aria-selected="true">Dictionary</button>
-    <button class="tab" data-tab="saved" aria-selected="false">My Words</button>
-    <button class="tab" data-tab="quiz" aria-selected="false">Quiz</button>
-  </nav>
+    <main class="container">
+        <h1>WordMate AI</h1>
+        <p class="subtitle">Your personal AI English vocabulary tutor</p>
 
-  <section class="panel" id="dictionaryPanel" aria-label="Dictionary">
-    <div class="heading-row"><h2>Dictionary</h2><span class="hint">English definitions · real dictionary data</span></div>
-    <div class="search"><input id="wordInput" maxlength="80" placeholder="Enter an English word, e.g. implement" autocomplete="off" aria-label="English word"><button id="searchButton">Search</button></div>
-    <div id="result" class="dictionary" aria-live="polite"><p class="subtle">Search a word to see its meanings and examples.</p></div>
-    <div class="actions"><button class="btn-green" id="saveButton" disabled>☆ Save word</button><span id="saveMessage" class="status" aria-live="polite"></span></div>
-  </section>
+        <!-- 1. 分頁按鈕。只切換畫面，不重新載入網頁 -->
+        <nav class="tabs" aria-label="功能切換">
+            <button class="tab-button active" data-page="dictionary">Dictionary</button>
+            <button class="tab-button" data-page="saved">My Words</button>
+            <button class="tab-button" data-page="quiz">Quiz</button>
+        </nav>
 
-  <section class="panel" id="savedPanel" aria-label="My Words" hidden>
-    <div class="heading-row"><h2>My Saved Words</h2><button class="btn-soft" id="refreshButton">Refresh</button></div>
-    <p class="hint">Tap a word to expand its meanings. You can remove a saved word below.</p>
-    <div id="savedWords" aria-live="polite">Loading…</div>
-  </section>
+        <!-- 2. 字典頁 -->
+        <section id="dictionaryPage" class="card page">
+            <div class="search">
+                <input id="wordInput" type="text" maxlength="80"
+                       placeholder="輸入英文單字，例如 implement">
+                <button id="searchButton">查詢單字</button>
+            </div>
+            <div id="result" class="dictionary" aria-live="polite">
+                輸入一個英文單字，開始學習！
+            </div>
+            <div class="actions">
+                <button id="saveButton" disabled>☆ 收藏單字</button>
+                <span id="saveMessage" aria-live="polite"></span>
+            </div>
+        </section>
 
-  <section class="panel" id="quizPanel" aria-label="Vocabulary Quiz" hidden>
-    <div class="heading-row"><h2>Vocabulary Quiz</h2><button id="startQuizButton">Start / Restart</button></div>
-    <p class="hint">Four choices from your saved words. You need at least four valid saved words.</p>
-    <div id="quizArea" hidden>
-      <p class="score" id="quizScore">Score: 0 / 0</p>
-      <h3 id="quizQuestion"></h3>
-      <div id="quizOptions"></div>
-      <p id="quizFeedback" class="status" aria-live="polite"></p>
-      <button id="nextQuizButton" disabled>Next question</button>
-    </div>
-  </section>
-</main>
-<script>
-'use strict';
-const $ = id => document.getElementById(id);
-const input = $('wordInput'), searchButton = $('searchButton'), result = $('result');
-const saveButton = $('saveButton'), saveMessage = $('saveMessage'), savedWords = $('savedWords');
-let currentWord = '', currentExplanation = '', currentDictionary = null;
-let quizQuestionId = null, quizCorrect = 0, quizTotal = 0, quizAnswered = false, quizLoading = false;
-let quizOptionValues = [];
+        <!-- 3. 我的收藏頁 -->
+        <section id="savedPage" class="card page" hidden>
+            <div class="section-header">
+                <h2>我的收藏單字</h2>
+                <button id="refreshButton">重新整理</button>
+            </div>
+            <p class="hint">點選單字展開內容，再點一次收合。</p>
+            <div id="savedWords" aria-live="polite"></div>
+        </section>
 
-function element(tag, text, className) {
-  const node = document.createElement(tag);
-  if (text !== undefined) node.textContent = text;
-  if (className) node.className = className;
-  return node;
-}
-function renderDictionary(data) {
-  const box = element('div', undefined, 'dictionary');
-  box.appendChild(element('h3', data.word || 'Unknown'));
-  if (data.phonetic) box.appendChild(element('div', data.phonetic, 'phonetic'));
-  for (const group of (data.meanings || [])) {
-    box.appendChild(element('div', group.partOfSpeech || 'unknown', 'pos'));
-    const list = element('ul');
-    for (const d of (group.definitions || [])) {
-      const li = element('li');
-      li.appendChild(element('span', d.definition || ''));
-      if (d.example) li.appendChild(element('em', d.example, 'example'));
-      list.appendChild(li);
-    }
-    box.appendChild(list);
-  }
-  box.appendChild(element('small', `Source: ${data.source || 'Dictionary'}`, 'hint'));
-  return box;
-}
-function showLegacy(text, word) {
-  const box = element('div', undefined, 'dictionary');
-  box.appendChild(element('h3', word));
-  const pre = element('p', text);
-  pre.style.whiteSpace = 'pre-wrap';
-  box.appendChild(pre);
-  return box;
-}
-function openTab(name) {
-  for (const tab of document.querySelectorAll('[data-tab]')) {
-    const selected = tab.dataset.tab === name;
-    tab.classList.toggle('active', selected);
-    tab.setAttribute('aria-selected', String(selected));
-  }
-  for (const n of ['dictionary','saved','quiz']) {
-    $(n+'Panel').hidden = n !== name;
-  }
-  if (name === 'saved') loadSavedWords();
-}
-for (const tab of document.querySelectorAll('[data-tab]')) tab.addEventListener('click', () => openTab(tab.dataset.tab));
+        <!-- 4. 測驗頁 -->
+        <section id="quizPage" class="card page" hidden>
+            <div class="section-header">
+                <h2>Vocabulary Quiz</h2>
+                <button id="startQuizButton">開始／重新測驗</button>
+            </div>
+            <p class="hint">至少需要收藏四個有英文定義的單字。</p>
+            <div id="quizArea" hidden>
+                <p id="quizScore">Score: 0 / 0</p>
+                <h3 id="quizQuestion"></h3>
+                <div id="quizOptions"></div>
+                <p id="quizFeedback" aria-live="polite"></p>
+                <button id="nextQuizButton" disabled>下一題</button>
+            </div>
+        </section>
+    </main>
 
-async function searchWord() {
-  const word = input.value.trim();
-  currentWord = ''; currentExplanation = ''; currentDictionary = null;
-  saveButton.disabled = true; saveMessage.textContent = '';
-  if (!word) { result.textContent = 'Please enter an English word.'; return; }
-  searchButton.disabled = true; searchButton.textContent = 'Searching…';
-  result.textContent = 'Looking up dictionary definitions…';
-  try {
-    const response = await fetch('/vocabulary/explain', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word})});
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || 'Lookup failed');
-    currentWord = data.word;
-    currentExplanation = data.explanation;
-    currentDictionary = data.dictionary;
-    result.replaceChildren(renderDictionary(currentDictionary));
-    saveButton.disabled = false;
-  } catch (err) {
-    result.textContent = 'Lookup failed: ' + err.message;
-  } finally { searchButton.disabled = false; searchButton.textContent = 'Search'; }
-}
-searchButton.addEventListener('click', searchWord);
-input.addEventListener('keydown', e => { if (e.key === 'Enter') searchWord(); });
+    <script>
+        "use strict";
 
-async function saveCurrentWord() {
-  if (!currentWord || !currentExplanation) return;
-  saveButton.disabled = true; saveMessage.textContent = 'Saving…';
-  try {
-    const response = await fetch('/vocabulary/save', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({word:currentWord, explanation:currentExplanation})});
-    if (response.status === 409) { saveMessage.textContent = 'Already saved.'; return; }
-    if (!response.ok) throw new Error('Save failed');
-    saveMessage.textContent = 'Saved successfully!';
-  } catch (err) {saveMessage.textContent = err.message;saveButton.disabled = false;}
-}
-saveButton.addEventListener('click', saveCurrentWord);
+        // 1. 取得網頁元素：每個變數都使用完整名稱，方便閱讀
+        const wordInput = document.getElementById("wordInput");
+        const searchButton = document.getElementById("searchButton");
+        const result = document.getElementById("result");
+        const saveButton = document.getElementById("saveButton");
+        const saveMessage = document.getElementById("saveMessage");
+        const savedWords = document.getElementById("savedWords");
+        const refreshButton = document.getElementById("refreshButton");
+        const quizArea = document.getElementById("quizArea");
+        const quizQuestion = document.getElementById("quizQuestion");
+        const quizOptions = document.getElementById("quizOptions");
+        const quizFeedback = document.getElementById("quizFeedback");
+        const quizScore = document.getElementById("quizScore");
+        const nextQuizButton = document.getElementById("nextQuizButton");
+        const startQuizButton = document.getElementById("startQuizButton");
 
-async function deleteSavedWord(item, button) {
-  if (!confirm(`Remove “${item.word}” from saved words?`)) return;
-  button.disabled = true;
-  try {
-    const response = await fetch(`/vocabulary/${item.id}`, {method:'DELETE'});
-    if (!response.ok) throw new Error('Unable to delete word');
-    if (currentWord && currentWord.toLowerCase() === item.word.toLowerCase()) {
-      saveButton.disabled = false; saveMessage.textContent = 'Removed. You may save this word again.';
-    }
-    await loadSavedWords();
-  } catch (err) {alert(err.message);button.disabled = false;}
-}
-async function loadSavedWords() {
-  savedWords.textContent = 'Loading…';
-  try {
-    const response = await fetch('/vocabulary/saved');
-    if (!response.ok) throw new Error('Unable to load saved words');
-    const data = await response.json();
-    savedWords.replaceChildren();
-    if (!data.words.length) { savedWords.textContent = 'No saved words yet.'; return; }
-    for (const item of data.words) {
-      const details = element('details', undefined, 'word-card');
-      details.appendChild(element('summary', item.word));
-      const content = element('div', undefined, 'word-content');
-      content.appendChild(item.dictionary ? renderDictionary(item.dictionary) : showLegacy(item.explanation, item.word));
-      const remove = element('button', 'Remove from saved', 'btn-red');
-      remove.addEventListener('click', () => deleteSavedWord(item, remove));
-      content.appendChild(remove); details.appendChild(content); savedWords.appendChild(details);
-    }
-  } catch (err) {savedWords.textContent = err.message;}
-}
-$('refreshButton').addEventListener('click', loadSavedWords);
+        let currentWord = "";
+        let currentExplanation = "";
+        let correctCount = 0;
+        let answeredCount = 0;
+        let currentQuestionId = null;
+        let currentOptions = [];
+        let hasAnswered = false;
+        let isLoadingQuestion = false;
 
-function updateScore() { $('quizScore').textContent = `Score: ${quizCorrect} / ${quizTotal}`; }
-async function loadQuizQuestion() {
-  if (quizLoading) return;
-  quizLoading = true; quizQuestionId = null; quizAnswered = false; quizOptionValues = [];
-  $('nextQuizButton').disabled = true;
-  $('quizQuestion').textContent = 'Loading question…';
-  $('quizOptions').replaceChildren(); $('quizFeedback').textContent = '';
-  try {
-    const response = await fetch('/quiz/question');
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || 'Quiz unavailable');
-    quizQuestionId = data.question_id; $('quizQuestion').textContent = data.question;
-    quizOptionValues = data.options;
-    data.options.forEach((option, i) => {
-      const button = element('button', `${String.fromCharCode(65+i)}. ${option}`, 'option');
-      button.addEventListener('click', () => submitQuizAnswer(option));
-      $('quizOptions').appendChild(button);
-    });
-  } catch (err) { $('quizQuestion').textContent = 'Cannot start quiz.'; $('quizFeedback').textContent = err.message; $('nextQuizButton').disabled = false; }
-  finally { quizLoading = false; }
-}
-async function submitQuizAnswer(answer) {
-  if (quizAnswered || quizQuestionId === null) return;
-  quizAnswered = true;
-  const buttons = [...$('quizOptions').querySelectorAll('button')];
-  buttons.forEach(button => button.disabled = true);
-  $('quizFeedback').textContent = 'Checking…';
-  try {
-    const response = await fetch('/quiz/answer', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question_id:quizQuestionId, answer})});
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.detail || 'Answer check failed');
-    quizTotal += 1; if (data.correct) quizCorrect += 1;
-    updateScore();
-    $('quizFeedback').textContent = data.correct ? 'Correct!' : `Incorrect. Correct answer: ${data.correct_answer}`;
-    buttons.forEach((button,i) => {
-      const value = quizOptionValues[i];
-      if (value.toLowerCase() === data.correct_answer.toLowerCase()) button.classList.add('correct');
-      else if (value === answer && !data.correct) button.classList.add('incorrect');
-    });
-    $('nextQuizButton').disabled = false;
-  } catch (err) {
-    $('quizFeedback').textContent = err.message;
-    quizAnswered = false;buttons.forEach(button => button.disabled = false);
-  }
-}
-$('startQuizButton').addEventListener('click', () => {quizCorrect=0;quizTotal=0;updateScore();$('quizArea').hidden=false;loadQuizQuestion();});
-$('nextQuizButton').addEventListener('click', loadQuizQuestion);
-</script>
+        // 2. 分頁切換：只顯示使用者選擇的頁面
+        function showPage(pageName) {
+            const pageNames = ["dictionary", "saved", "quiz"];
+
+            for (const name of pageNames) {
+                document.getElementById(name + "Page").hidden = name !== pageName;
+            }
+
+            const tabButtons = document.querySelectorAll(".tab-button");
+            for (const button of tabButtons) {
+                button.classList.toggle("active", button.dataset.page === pageName);
+            }
+
+            if (pageName === "saved") {
+                loadSavedWords();
+            }
+        }
+
+        for (const button of document.querySelectorAll(".tab-button")) {
+            button.addEventListener("click", () => showPage(button.dataset.page));
+        }
+
+        // 3. 將字典 JSON 轉成 HTML 元素（不要將外部文字直接放進 innerHTML）
+        function renderDictionary(dictionary) {
+            const container = document.createElement("div");
+            container.className = "dictionary";
+
+            const title = document.createElement("h3");
+            title.textContent = dictionary.word || "Unknown";
+            container.appendChild(title);
+
+            if (dictionary.phonetic) {
+                const phonetic = document.createElement("p");
+                phonetic.className = "phonetic";
+                phonetic.textContent = dictionary.phonetic;
+                container.appendChild(phonetic);
+            }
+
+            for (const meaning of (dictionary.meanings || [])) {
+                const partOfSpeech = document.createElement("h4");
+                partOfSpeech.textContent = meaning.partOfSpeech || "unknown";
+                container.appendChild(partOfSpeech);
+
+                const list = document.createElement("ul");
+                for (const definition of (meaning.definitions || [])) {
+                    const item = document.createElement("li");
+                    item.appendChild(document.createTextNode(definition.definition || ""));
+
+                    if (definition.example) {
+                        const example = document.createElement("em");
+                        example.textContent = definition.example;
+                        item.appendChild(example);
+                    }
+                    list.appendChild(item);
+                }
+                container.appendChild(list);
+            }
+
+            const source = document.createElement("p");
+            source.className = "hint";
+            source.textContent = "Source: " + (dictionary.source || "Dictionary");
+            container.appendChild(source);
+            return container;
+        }
+
+        // 舊版收藏是純文字：相容顯示，不會破壞舊資料
+        function renderLegacyExplanation(word, explanation) {
+            const container = document.createElement("div");
+            container.className = "dictionary";
+            const title = document.createElement("h3");
+            title.textContent = word;
+            const text = document.createElement("p");
+            text.textContent = explanation;
+            text.style.whiteSpace = "pre-wrap";
+            container.append(title, text);
+            return container;
+        }
+
+        // 4. 查詢字典
+        async function searchWord() {
+            const word = wordInput.value.trim();
+            currentWord = "";
+            currentExplanation = "";
+            saveButton.disabled = true;
+            saveMessage.textContent = "";
+
+            if (!word) {
+                result.textContent = "請先輸入英文單字。";
+                return;
+            }
+
+            searchButton.disabled = true;
+            searchButton.textContent = "查詢中...";
+            result.textContent = "正在查詢字典...";
+
+            try {
+                const response = await fetch("/vocabulary/explain", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ word: word })
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "查詢失敗");
+                }
+
+                currentWord = data.word;
+                currentExplanation = data.explanation;
+                result.replaceChildren(renderDictionary(data.dictionary));
+                saveButton.disabled = false;
+            } catch (error) {
+                result.textContent = "查詢失敗：" + error.message;
+            } finally {
+                searchButton.disabled = false;
+                searchButton.textContent = "查詢單字";
+            }
+        }
+
+        searchButton.addEventListener("click", searchWord);
+        wordInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") searchWord();
+        });
+
+        // 5. 收藏單字。重複收藏由後端回傳 HTTP 409
+        async function saveCurrentWord() {
+            if (!currentWord || !currentExplanation) return;
+
+            saveButton.disabled = true;
+            saveMessage.textContent = "收藏中...";
+
+            try {
+                const response = await fetch("/vocabulary/save", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        word: currentWord,
+                        explanation: currentExplanation
+                    })
+                });
+
+                if (response.status === 409) {
+                    saveMessage.textContent = "這個單字已經收藏過了。";
+                    return;
+                }
+                if (!response.ok) throw new Error("收藏失敗");
+
+                saveMessage.textContent = "收藏成功！";
+            } catch (error) {
+                saveMessage.textContent = error.message;
+                saveButton.disabled = false;
+            }
+        }
+
+        saveButton.addEventListener("click", saveCurrentWord);
+
+        // 6. 刪除收藏：使用資料庫 ID 精確指定紀錄
+        async function deleteSavedWord(word, deleteButton) {
+            if (!confirm("確定取消收藏「" + word.word + "」嗎？")) return;
+
+            deleteButton.disabled = true;
+            try {
+                const response = await fetch("/vocabulary/" + word.id, {
+                    method: "DELETE"
+                });
+                if (!response.ok) throw new Error("取消收藏失敗");
+
+                if (currentWord.toLowerCase() === word.word.toLowerCase()) {
+                    saveButton.disabled = false;
+                    saveMessage.textContent = "已取消收藏，可以重新收藏。";
+                }
+                await loadSavedWords();
+            } catch (error) {
+                alert(error.message);
+                deleteButton.disabled = false;
+            }
+        }
+
+        // 7. 讀取收藏：HTML 原生 details / summary 實作展開收合
+        async function loadSavedWords() {
+            savedWords.textContent = "載入中...";
+
+            try {
+                const response = await fetch("/vocabulary/saved");
+                if (!response.ok) throw new Error("無法讀取收藏");
+                const data = await response.json();
+
+                savedWords.replaceChildren();
+                if (data.words.length === 0) {
+                    savedWords.textContent = "目前沒有收藏單字。";
+                    return;
+                }
+
+                for (const word of data.words) {
+                    const card = document.createElement("details");
+                    card.className = "saved-item";
+
+                    const summary = document.createElement("summary");
+                    summary.textContent = word.word;
+                    card.appendChild(summary);
+
+                    const content = document.createElement("div");
+                    content.className = "saved-content";
+                    if (word.dictionary) {
+                        content.appendChild(renderDictionary(word.dictionary));
+                    } else {
+                        content.appendChild(renderLegacyExplanation(word.word, word.explanation));
+                    }
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.className = "delete-button";
+                    deleteButton.textContent = "取消收藏";
+                    deleteButton.addEventListener("click", () => {
+                        deleteSavedWord(word, deleteButton);
+                    });
+
+                    content.appendChild(deleteButton);
+                    card.appendChild(content);
+                    savedWords.appendChild(card);
+                }
+            } catch (error) {
+                savedWords.textContent = error.message;
+            }
+        }
+
+        refreshButton.addEventListener("click", loadSavedWords);
+
+        // 8. 測驗題目
+        function updateScore() {
+            quizScore.textContent = `Score: ${correctCount} / ${answeredCount}`;
+        }
+
+        async function loadQuizQuestion() {
+            if (isLoadingQuestion) return;
+            isLoadingQuestion = true;
+            currentQuestionId = null;
+            currentOptions = [];
+            hasAnswered = false;
+            nextQuizButton.disabled = true;
+            quizQuestion.textContent = "載入題目中...";
+            quizOptions.replaceChildren();
+            quizFeedback.textContent = "";
+
+            try {
+                const response = await fetch("/quiz/question");
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || "無法取得題目");
+
+                currentQuestionId = data.question_id;
+                currentOptions = data.options;
+                quizQuestion.textContent = data.question;
+
+                data.options.forEach((option, index) => {
+                    const optionButton = document.createElement("button");
+                    optionButton.className = "quiz-option";
+                    optionButton.textContent = String.fromCharCode(65 + index) + ". " + option;
+                    optionButton.addEventListener("click", () => submitQuizAnswer(option));
+                    quizOptions.appendChild(optionButton);
+                });
+            } catch (error) {
+                quizQuestion.textContent = "無法開始測驗。";
+                quizFeedback.textContent = error.message;
+                nextQuizButton.disabled = false;
+            } finally {
+                isLoadingQuestion = false;
+            }
+        }
+
+        // 9. 答題、顯示正確與錯誤選項
+        async function submitQuizAnswer(selectedAnswer) {
+            if (hasAnswered || currentQuestionId === null) return;
+            hasAnswered = true;
+
+            const optionButtons = Array.from(quizOptions.querySelectorAll("button"));
+            optionButtons.forEach((button) => button.disabled = true);
+            quizFeedback.textContent = "檢查答案中...";
+
+            try {
+                const response = await fetch("/quiz/answer", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question_id: currentQuestionId,
+                        answer: selectedAnswer
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || "檢查答案失敗");
+
+                answeredCount++;
+                if (data.correct) correctCount++;
+                updateScore();
+                quizFeedback.textContent = data.correct
+                    ? "Correct!"
+                    : "Incorrect. Correct answer: " + data.correct_answer;
+
+                optionButtons.forEach((button, index) => {
+                    const option = currentOptions[index];
+                    if (option.toLowerCase() === data.correct_answer.toLowerCase()) {
+                        button.classList.add("correct");
+                    } else if (option === selectedAnswer && !data.correct) {
+                        button.classList.add("incorrect");
+                    }
+                });
+                nextQuizButton.disabled = false;
+            } catch (error) {
+                quizFeedback.textContent = error.message;
+                hasAnswered = false;
+                optionButtons.forEach((button) => button.disabled = false);
+            }
+        }
+
+        startQuizButton.addEventListener("click", () => {
+            correctCount = 0;
+            answeredCount = 0;
+            updateScore();
+            quizArea.hidden = false;
+            loadQuizQuestion();
+        });
+        nextQuizButton.addEventListener("click", loadQuizQuestion);
+    </script>
 </body>
 </html>
