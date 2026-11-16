@@ -8,13 +8,11 @@ services:
       --port 8000
       --reload
       --reload-dir /app/app
-
   ollama:
     image: ollama/ollama
     volumes:
       - ollama_data:/root/.ollama
-
 volumes:
   ollama_data:
-      external: true
-      name: ai-model-serving_ollama_data
+    external: true
+    name: ai-model-serving_ollama_data
