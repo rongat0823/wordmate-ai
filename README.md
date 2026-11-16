@@ -7,7 +7,6 @@ An English vocabulary learning MVP built with **FastAPI, SQLite, Docker, and van
 - **Dictionary** — English definitions grouped by actual parts of speech, sourced from [Free Dictionary API](https://dictionaryapi.dev/). Examples appear when the source provides them; missing examples are not fabricated.
 - **My Words** — Save words with case-insensitive duplicate prevention, expand/collapse explanations, and delete saved items.
 - **Quiz** — Generate four-choice questions from saved definitions, check answers server-side, and track current-session score.
-- **Mobile-friendly** interface, with three navigation sections.
 - **Optional** legacy `/chat` Ollama endpoint; dictionary lookups no longer require Ollama inference.
 
 ## Architecture
